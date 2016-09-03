@@ -1,0 +1,33 @@
+{
+  "name": "pcc-adt-node",
+  "description": "Node.js implementation of Point Click Care ADT endpoint",
+  "files": [
+    "lib"
+  ],
+  "author": "Nick Mitchell <eb.nickm@gmail.com>",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gnickm/pcc-adt-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gnickm/pcc-adt-node/issues"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "nodengine-hl7": "~4.1.8",
+    "split": "^1.0.0",
+    "winston": "~2.2.0"
+  },
+  "devDependencies": {
+    "mocha": "~2.2.1",
+    "should": "~5.2.0",
+    "chai": "~2.1.1",
+    "assertion-error": "~1.0.0",
+    "deep-eql": "~0.1.3",
+    "chance": "~0.7.3"
+  },
+  "scripts": {
+    "test": "mocha"
+  }
+}
