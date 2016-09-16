@@ -1,6 +1,6 @@
 {
   "name": "pcc-adt-node",
-  "description": "Node.js implementation of Point Click Care ADT endpoint",
+  "description": "Node.js implementation of PointClickCare ADT endpoint",
   "files": [
     "lib"
   ],
