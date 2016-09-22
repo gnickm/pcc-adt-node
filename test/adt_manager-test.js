@@ -2,12 +2,17 @@
 // test/adtManagerTest.js
 // --------------------------------------------------------------------------
 
-var expect = require('chai').expect;
-
-var adtman = require('../lib/adtManager');
-var hl7Util = require('../lib/hl7Util.js');
+var expect  = require('chai').expect;
 
 //--------------------------------------------------------------------------
+
+var ADTManager = require('../lib/adt_manager');
+var hl7        = require('../lib/hl7');
+
+//--------------------------------------------------------------------------
+
+var adtman = new ADTManager();
+// adtman.log = console.log;
 
 describe('ADT Manager Functions', function() {
     describe('isRegistered()', function() {
@@ -95,14 +100,14 @@ describe('ADT Manager Functions', function() {
                 next();
             })).to.not.be.false;
 
-            var hl7 =
+            var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
                 "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
                 "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
                 "ZEV|2001|200702080406|PointClickCare";
 
-            hl7Util.parseString(hl7, function(err, parsedMessage) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
                 adtman.handle(parsedMessage, function(err) {
@@ -121,14 +126,14 @@ describe('ADT Manager Functions', function() {
                 next();
             })).to.not.be.false;
 
-            var hl7 =
+            var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A02|110A35A09B785|P|2.5\r" +
                 "EVN|A02|200702080406|||PointClickCare|200702080406\r" +
                 "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
                 "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
                 "ZEV|2001|200702080406|PointClickCare";
 
-            hl7Util.parseString(hl7, function(err, parsedMessage) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
                 adtman.handle(parsedMessage, function(err) {
@@ -139,14 +144,14 @@ describe('ADT Manager Functions', function() {
             });
         });
         it('should fail if missing EVN segment (required for every message type)', function(done) {
-            var hl7 =
+            var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 // "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
                 "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
                 "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
                 "ZEV|2001|200702080406|PointClickCare";
 
-            hl7Util.parseString(hl7, function(err, parsedMessage) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
                 adtman.handle(parsedMessage, function(err) {
@@ -156,14 +161,14 @@ describe('ADT Manager Functions', function() {
             });
         });
         it('should fail if missing PID segment (required for every message type)', function(done) {
-            var hl7 =
+            var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
                 // "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
                 "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
                 "ZEV|2001|200702080406|PointClickCare";
 
-            hl7Util.parseString(hl7, function(err, parsedMessage) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
                 adtman.handle(parsedMessage, function(err) {
@@ -173,14 +178,14 @@ describe('ADT Manager Functions', function() {
             });
         });
         it('should fail if missing PV1 segment (required for every message type)', function(done) {
-            var hl7 =
+            var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
                 "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
                 // "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
                 "ZEV|2001|200702080406|PointClickCare";
 
-            hl7Util.parseString(hl7, function(err, parsedMessage) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
                 adtman.handle(parsedMessage, function(err) {
@@ -190,13 +195,13 @@ describe('ADT Manager Functions', function() {
             });
         });
         it('should fail if missing ZEV segment (required for every message type)', function(done) {
-            var hl7 =
+            var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
                 "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
-                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r"
+                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r";
 
-            hl7Util.parseString(hl7, function(err, parsedMessage) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
                 adtman.handle(parsedMessage, function(err) {
