@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions xmlns:tns="http://www.pointclickcare.com/msg/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xs="http://www.w3.org/2001/XMLSchema" name="PCCSubmitMessage" targetNamespace="http://www.pointclickcare.com/msg/">
+  <wsdl:types>
+	  <xs:schema elementFormDefault="qualified" targetNamespace="http://www.pointclickcare.com/msg/">
+      <xs:element name="SubmitMessage">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="username" type="xs:string"/>
+            <xs:element name="password" type="xs:string"/>
+            <xs:element name="data" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="SubmitMessageResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="data" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="SubmitMessageSoapIn">
+    <wsdl:part name="parameters" element="tns:SubmitMessage"/>
+  </wsdl:message>
+  <wsdl:message name="SubmitMessageSoapOut">
+    <wsdl:part name="parameters" element="tns:SubmitMessageResponse"/>
+  </wsdl:message>
+  <wsdl:portType name="PCC2Soap">
+    <wsdl:operation name="SubmitMessage">
+      <wsdl:input message="tns:SubmitMessageSoapIn"/>
+      <wsdl:output message="tns:SubmitMessageSoapOut"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="PCC2Soap" type="tns:PCC2Soap">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="SubmitMessage">
+		<soap:operation soapAction="http://www.pointclickcare.com/msg/SubmitMessage" style="document"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="PCCSubmitMessage">
+    <wsdl:port name="PCC2Soap" binding="tns:PCC2Soap">
+		<soap:address location="http://127.0.0.1:8001/soap/adt"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

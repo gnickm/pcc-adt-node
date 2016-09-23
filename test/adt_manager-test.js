@@ -1,5 +1,5 @@
 // --------------------------------------------------------------------------
-// test/adtManagerTest.js
+// test/adt_manager-test.js
 // --------------------------------------------------------------------------
 
 var expect  = require('chai').expect;
@@ -12,6 +12,8 @@ var hl7        = require('../lib/hl7');
 //--------------------------------------------------------------------------
 
 var adtman = new ADTManager();
+
+// Uncomment this line to enable console logging
 // adtman.log = console.log;
 
 describe('ADT Manager Functions', function() {
