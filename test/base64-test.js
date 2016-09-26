@@ -29,6 +29,10 @@ describe('Base64 Util Functions', function() {
             expect(base64.decode('SGVsbG8gV29ybGQ=')).to.equal('Hello World');
             done();
         });
+        it('should still return something when decoding an invalid base64 string', function(done) {
+            expect(base64.decode('bad string, not really base46, but decodes anyway')).to.not.be.null;
+            done();
+        });
         it('should not blow up on goofy stuff', function(done) {
             expect(base64.decode(null)).to.be.null;
             expect(base64.decode(1234)).to.be.null;

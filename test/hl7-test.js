@@ -256,8 +256,8 @@ describe('HL7 Util Functions', function() {
                     expect(msa.parsed.ControlID).to.equal(msh.parsed.MessageControlID);
                     expect(msa.parsed.AcknowledgementCode).to.equal('AE');
 
-                    var err = hl7.getSegmentOfType('ERR', parsedMsa);
-                    expect(err).to.not.be.null;
+                    var errSegment = hl7.getSegmentOfType('ERR', parsedMsa);
+                    expect(errSegment).to.not.be.null;
 
                     done();
                 });
