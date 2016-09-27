@@ -16,7 +16,6 @@
     "lib": "./lib"
   },
   "dependencies": {
-    "async": "^2.0.1",
     "lodash": "^4.16.2",
     "moment": "^2.15.1",
     "nodengine-hl7": "~4.1.8",
@@ -29,14 +28,16 @@
     "chai": "~2.1.1",
     "chance": "~0.7.3",
     "deep-equal": "^1.0.1",
+    "eslint": "^3.6.1",
+    "istanbul": "0.4.3",
     "mocha": "~2.2.1",
-    "should": "~5.2.0",
-    "istanbul": "0.4.3"
+    "should": "~5.2.0"
   },
   "engines": {
     "node": ">= 0.10.0"
   },
   "scripts": {
+    "lint"   : "node_modules/.bin/eslint *.js lib/**.js",
     "test"   : "mocha",
     "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/"
   }
