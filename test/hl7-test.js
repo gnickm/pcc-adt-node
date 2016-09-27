@@ -258,6 +258,8 @@ describe('HL7 Util Functions', function() {
 
                     var errSegment = hl7.getSegmentOfType('ERR', parsedMsa);
                     expect(errSegment).to.not.be.null;
+                    expect(errSegment.parsed.ErrorCode).to.equal('AE');
+                    expect(errSegment.parsed.UserMessage).to.equal('Test error messsage');
 
                     done();
                 });

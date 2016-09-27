@@ -111,7 +111,10 @@ describe('ADT SOAP Functions', function() {
                         expect(msa.parsed.ControlID).to.equal('110A35A09B785');
                         expect(msa.parsed.AcknowledgementCode).to.equal('AE');
 
-                        expect(hl7.getSegmentOfType('ERR', parsedMsa)).to.not.be.null;
+                        var errSegment = hl7.getSegmentOfType('ERR', parsedMsa);
+                        expect(errSegment).to.not.be.null;
+                        expect(errSegment.parsed.ErrorCode).to.equal('AE');
+                        expect(errSegment.parsed.UserMessage).to.equal('Missing required argument "username"');
                         done();
                     });
                 });
@@ -135,7 +138,10 @@ describe('ADT SOAP Functions', function() {
                         expect(msa.parsed.ControlID).to.equal('110A35A09B785');
                         expect(msa.parsed.AcknowledgementCode).to.equal('AE');
 
-                        expect(hl7.getSegmentOfType('ERR', parsedMsa)).to.not.be.null;
+                        var errSegment = hl7.getSegmentOfType('ERR', parsedMsa);
+                        expect(errSegment).to.not.be.null;
+                        expect(errSegment.parsed.ErrorCode).to.equal('AE');
+                        expect(errSegment.parsed.UserMessage).to.equal('Missing required argument "password"');
                         done();
                     });
                 });
@@ -160,7 +166,10 @@ describe('ADT SOAP Functions', function() {
                         expect(msa.parsed.ControlID).to.equal('110A35A09B785');
                         expect(msa.parsed.AcknowledgementCode).to.equal('AE');
 
-                        expect(hl7.getSegmentOfType('ERR', parsedMsa)).to.not.be.null;
+                        var errSegment = hl7.getSegmentOfType('ERR', parsedMsa);
+                        expect(errSegment).to.not.be.null;
+                        expect(errSegment.parsed.ErrorCode).to.equal('AE');
+                        expect(errSegment.parsed.UserMessage).to.equal('Invalid credentials');
                         done();
                     });
                 });
@@ -191,7 +200,10 @@ describe('ADT SOAP Functions', function() {
                         expect(msa.parsed.ControlID).to.equal('110A35A09B785');
                         expect(msa.parsed.AcknowledgementCode).to.equal('AE');
 
-                        expect(hl7.getSegmentOfType('ERR', parsedMsa)).to.not.be.null;
+                        var errSegment = hl7.getSegmentOfType('ERR', parsedMsa);
+                        expect(errSegment).to.not.be.null;
+                        expect(errSegment.parsed.ErrorCode).to.equal('AE');
+                        expect(errSegment.parsed.UserMessage).to.equal('Incoming "A03" message malfomed, did not have expected one "PID" segment');
                         done();
                     });
                 });
