@@ -1,6 +1,7 @@
 // --------------------------------------------------------------------------
 // test/adt_soap-test.js
 // --------------------------------------------------------------------------
+'use strict'
 
 var expect = require('chai').expect;
 var soap   = require('soap');
@@ -71,6 +72,21 @@ describe('ADT SOAP Functions', function() {
             });
         });
 
+        it('should SOAP fault if data argument is bogus', function(done) {
+            var args = {
+                username: 'default-user',
+                password: 'default-password',
+                data: '***bogus***'
+            };
+            soap.createClient(soapUrl, function(err, client) {
+                expect(err).to.be.null;
+                client.SubmitMessage(args, function(err, result) {
+                    expect(err).to.not.be.null;
+                    done();
+                });
+            });
+        });
+
         it('should SOAP fault if missing data argument', function(done) {
             var args = {
                 username: 'default-user',
@@ -85,12 +101,21 @@ describe('ADT SOAP Functions', function() {
             });
         });
 
-        it('should SOAP fault if data argument is bogus', function(done) {
+        it('should SOAP fault on invalid HL7 message', function(done) {
+            // Missing PID segment, invalid according to PCC
+            var badHL7String =
+                "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
+                "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
+                "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
+                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+                "FOO|Im in ur HL7 breakin ur parser\r" +
+                "ZEV|2001|200702080406|PointClickCare";
             var args = {
                 username: 'default-user',
                 password: 'default-password',
-                data: '***bogus***'
+                data: base64.encode(badHL7String)
             };
+
             soap.createClient(soapUrl, function(err, client) {
                 expect(err).to.be.null;
                 client.SubmitMessage(args, function(err, result) {

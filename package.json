@@ -21,7 +21,8 @@
     "moment": "^2.15.1",
     "nodengine-hl7": "~4.1.8",
     "soap": "^0.17.0",
-    "split": "^1.0.0"
+    "split": "^1.0.0",
+    "string-to-stream": "^1.1.0"
   },
   "devDependencies": {
     "assertion-error": "~1.0.0",
