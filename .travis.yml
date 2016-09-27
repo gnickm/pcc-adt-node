@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "0.10"
+  - "0.12"
+  - "1.8"
+  - "2.5"
+  - "3.3"
+  - "4.4"
+  - "5.11"
+  - "6.2"
+sudo: false
+cache:
+  directories:
+    - node_modules
+script: "npm run-script test-ci"
+after_script: "npm install coveralls@2.10.0 && cat ./coverage/lcov.info | coveralls"
