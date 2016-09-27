@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "async": "^2.0.1",
+    "lodash": "^4.16.2",
     "moment": "^2.15.1",
     "nodengine-hl7": "~4.1.8",
     "soap": "^0.17.0",
