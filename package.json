@@ -30,9 +30,13 @@
     "deep-equal": "^1.0.1",
     "mocha": "~2.2.1",
     "should": "~5.2.0",
-    "winston": "~2.2.0"
+    "istanbul": "0.4.3"
+  },
+  "engines": {
+    "node": ">= 0.10.0"
   },
   "scripts": {
-    "test": "mocha"
+    "test"   : "mocha",
+    "test-ci": "istanbul cover node_modules/mocha/bin/_mocha --report lcovonly -- --reporter spec --check-leaks test/"
   }
 }
