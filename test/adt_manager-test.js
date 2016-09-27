@@ -213,4 +213,35 @@ describe('ADT Manager Functions', function() {
             });
         });
     });
+    describe('getADTMessageType()', function() {
+        it('should return type code from EVN segment', function(done) {
+            var hl7String =
+                "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
+                "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
+                "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
+                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+                "ZEV|2001|200702080406|PointClickCare";
+
+            hl7.parseString(hl7String, function(err, parsedMessage) {
+                expect(err).to.be.null;
+                expect(parsedMessage).to.not.equal(null);
+                expect(adtman.getADTMessageType(parsedMessage)).to.equal('A03');
+                done();
+            });
+        });
+        it('should return false if there is no EVN segment', function(done) {
+            var hl7String =
+                "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
+                "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
+                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+                "ZEV|2001|200702080406|PointClickCare";
+
+            hl7.parseString(hl7String, function(err, parsedMessage) {
+                expect(err).to.be.null;
+                expect(parsedMessage).to.not.equal(null);
+                expect(adtman.getADTMessageType(parsedMessage)).to.be.false;
+                done();
+            });
+        });
+    });
 });
