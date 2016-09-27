@@ -14,11 +14,12 @@ var ADTSoapServer = require('../lib/adt_soap');
 //--------------------------------------------------------------------------
 
 var soapOptions = {
-    wsdl: 'test/fixtures/local-adt.wsdl',
-    log: console.log // uncomment to enable console logging
+    // uncomment to enable console logging
+    // log: console.log,
+    wsdl: 'test/fixtures/local-adt.wsdl'
 };
 var soapUrl = 'http://127.0.0.1:8001/soap/adt?wsdl';
-var soapServer = new ADTSoapServer();
+var soapServer = null;
 
 describe('ADT SOAP Functions', function() {
     describe('listen()', function() {
@@ -30,7 +31,12 @@ describe('ADT SOAP Functions', function() {
             "ZEV|2001|200702080406|PointClickCare";
 
         before(function() {
+            soapServer = new ADTSoapServer();
             soapServer.listen(soapOptions);
+        });
+
+        after(function(done) {
+            soapServer.close(done);
         });
 
         it('should be callable via SOAP client in happy path', function(done) {
@@ -206,6 +212,49 @@ describe('ADT SOAP Functions', function() {
                         expect(errSegment.parsed.UserMessage).to.equal('Incoming "A03" message malfomed, did not have expected one "PID" segment');
                         done();
                     });
+                });
+            });
+        });
+    });
+
+    describe('handler()', function() {
+        var hl7String =
+            "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
+            "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
+            "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
+            "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+            "ZEV|2001|200702080406|PointClickCare";
+
+        before(function() {
+            soapServer = new ADTSoapServer();
+            soapServer.listen(soapOptions);
+        });
+
+        after(function(done) {
+            soapServer.close(done);
+        });
+
+        it('should pass through to correct registered handler', function(done) {
+            var handlerWasCalled = false;
+            var args = {
+                username: 'default-user',
+                password: 'default-password',
+                data: base64.encode(hl7String)
+            };
+            soapServer.handler('A03', function(message, next) {
+                expect(message).to.not.be.null;
+                var evn = hl7.getSegmentOfType('EVN', message);
+                expect(evn.parsed.TypeCode).to.equal('A03');
+                handlerWasCalled = true;
+                next();
+            });
+            soap.createClient(soapUrl, function(err, client) {
+                expect(err).to.be.null;
+                client.SubmitMessage(args, function(err, result) {
+                    expect(err).to.be.null;
+                    expect(result.data).to.not.be.null;
+                    expect(handlerWasCalled).to.be.true;
+                    done();
                 });
             });
         });
