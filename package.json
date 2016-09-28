@@ -1,8 +1,8 @@
 {
-  "name": "pcc-adt-node",
-  "description": "Node.js implementation of PointClickCare ADT endpoint",
-  "author": "Nick Mitchell <eb.nickm@gmail.com>",
-  "version": "0.1.0",
+  "name": "pcc-adt",
+  "description": "Customizable baseline PointClickCare ADT SOAP service for node",
+  "author": "Nick Mitchell <nick@lmcllc.us>",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/gnickm/pcc-adt-node.git"
@@ -10,11 +10,20 @@
   "bugs": {
     "url": "https://github.com/gnickm/pcc-adt-node/issues"
   },
-  "license": "Apache-2.0",
+  "license": "MIT",
   "main": "./index.js",
   "directories": {
     "lib": "./lib"
   },
+  "keywords": [
+    "pointclickcare",
+    "adt",
+    "soap",
+    "hl7",
+    "point",
+    "click",
+    "care"
+  ],
   "dependencies": {
     "lodash": "^4.16.2",
     "moment": "^2.15.1",
