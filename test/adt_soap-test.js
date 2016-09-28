@@ -14,16 +14,14 @@ var ADTSoapServer = require('../lib/adt_soap');
 
 //--------------------------------------------------------------------------
 
-var soapOptions = {
-    // uncomment to enable console logging
-    // log: console.log,
-    wsdl: 'test/fixtures/local-adt.wsdl'
-};
-var soapUrl = 'http://127.0.0.1:8001/soap/adt?wsdl';
+// Self-signed certs OK for testing
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 var soapServer = null;
 
 describe('ADT SOAP Functions', function() {
-    describe('listen()', function() {
+    describe('listen() with SSL', function() {
+        var soapUrl = 'https://127.0.0.1:8001/soap/adt?wsdl';
         var hl7String =
             "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
             "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
@@ -32,6 +30,13 @@ describe('ADT SOAP Functions', function() {
             "ZEV|2001|200702080406|PointClickCare";
 
         before(function() {
+            var soapOptions = {
+                // uncomment to enable console logging
+                // log: console.log,
+                wsdl:    'test/fixtures/local-adt-https.wsdl',
+                sslcert: 'test/fixtures/self-signed.crt',
+                sslkey:  'test/fixtures/self-signed.key'
+            };
             soapServer = new ADTSoapServer();
             soapServer.listen(soapOptions);
         });
@@ -242,7 +247,8 @@ describe('ADT SOAP Functions', function() {
         });
     });
 
-    describe('handler()', function() {
+    describe('listen() without SSL', function() {
+        var soapUrl = 'http://127.0.0.1:8001/soap/adt?wsdl';
         var hl7String =
             "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
             "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
@@ -251,6 +257,69 @@ describe('ADT SOAP Functions', function() {
             "ZEV|2001|200702080406|PointClickCare";
 
         before(function() {
+            var soapOptions = {
+                // uncomment to enable console logging
+                // log: console.log,
+                wsdl:    'test/fixtures/local-adt-http.wsdl'
+            };
+            soapServer = new ADTSoapServer();
+            soapServer.listen(soapOptions);
+        });
+
+        after(function(done) {
+            soapServer.close(done);
+        });
+
+        it('should be callable via SOAP client in happy path', function(done) {
+            var args = {
+                username: 'default-user',
+                password: 'default-password',
+                data: base64.encode(hl7String)
+            };
+            soap.createClient(soapUrl, function(err, client) {
+                expect(err).to.be.null;
+                client.SubmitMessage(args, function(err, result) {
+                    expect(err).to.be.null;
+                    expect(result.data).to.not.be.null;
+                    hl7.parseString(base64.decode(result.data), function(err, parsedMsa) {
+                        expect(err).to.be.null;
+                        var newmsh = hl7.getSegmentOfType('MSH', parsedMsa);
+                        expect(newmsh.parsed.ReceivingApplication).to.equal('SNDAPPL');
+                        expect(newmsh.parsed.ReceivingFacility).to.equal('snd_fac');
+                        expect(newmsh.parsed.SendingApplication).to.equal('RECAPPL');
+                        expect(newmsh.parsed.SendingFacility).to.equal('rec_fac');
+                        expect(newmsh.parsed.MessageControlID).to.equal('110A35A09B785');
+                        expect(newmsh.parsed.ProcessingID).to.equal('P');
+
+                        var msa = hl7.getSegmentOfType('MSA', parsedMsa);
+                        expect(msa.parsed.ControlID).to.equal('110A35A09B785');
+                        expect(msa.parsed.AcknowledgementCode).to.equal('AA');
+
+                        expect(hl7.getSegmentOfType('ERR', parsedMsa)).to.be.null;
+                        done();
+                    });
+                });
+            });
+        });
+    });
+
+    describe('handler()', function() {
+        var soapUrl = 'https://127.0.0.1:8001/soap/adt?wsdl';
+        var hl7String =
+            "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
+            "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
+            "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
+            "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+            "ZEV|2001|200702080406|PointClickCare";
+
+        before(function() {
+            var soapOptions = {
+                // uncomment to enable console logging
+                // log: console.log,
+                wsdl:    'test/fixtures/local-adt-https.wsdl',
+                sslcert: 'test/fixtures/self-signed.crt',
+                sslkey:  'test/fixtures/self-signed.key'
+            };
             soapServer = new ADTSoapServer();
             soapServer.listen(soapOptions);
         });
