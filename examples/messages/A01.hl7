@@ -1,0 +1,7 @@
+MSH|^~\&|PCCApp|NODE_ADT|ExampleApp|NODE_ADT|20160210152928.169||ADT^A01|269178|T|2.5
+EVN|A01|201511091330|||test-user|201511091330
+PID|1||370^^^^FI~000274^^^^HC~000274^^^^PN||Greene^Maggie||19570327|F||||||||||000274
+PV1|1|I|WEST^217^1^^^N^5^1|3 - Elective||||||||||1 - Physician Referral||||2||||||||||||||||||||||||||201511091330|
+AL1|1||To Be Determined
+IN1|1|^Private Pay^^1110-10^Private Pay|PP|""|||||||||||PRV||NON^None||||IN
+ZEV|2000|201511091330|test-user
