@@ -266,4 +266,32 @@ describe('HL7 Util Functions', function() {
             });
         });
     });
+    describe('splitDataField()', function() {
+        it('should just return the field if it is not splittable', function(done) {
+            expect(hl7.splitDataField('This should not split up')).to.equal('This should not split up');
+            done();
+        });
+        it('should split on component separator', function(done) {
+            var chunks = hl7.splitDataField('Lewis^Jerry^Lee');
+            expect(chunks).to.be.an.array;
+            expect(chunks).to.have.length(3);
+            expect(chunks[0]).to.equal('Lewis');
+            expect(chunks[1]).to.equal('Jerry');
+            expect(chunks[2]).to.equal('Lee');
+            done();
+        });
+        it('should split on repetition then component separator', function(done) {
+            done();
+            var chunks = hl7.splitDataField('Lewis^Jerry^Lee~Redding^Ottis');
+            expect(chunks).to.be.an.array;
+            expect(chunks).to.have.length(2);
+            expect(chunks[0]).to.have.length(3);
+            expect(chunks[0][0]).to.equal('Lewis');
+            expect(chunks[0][1]).to.equal('Jerry');
+            expect(chunks[0][2]).to.equal('Lee');
+            expect(chunks[1]).to.have.length(2);
+            expect(chunks[1][0]).to.equal('Redding');
+            expect(chunks[1][1]).to.equal('Ottis');
+        });
+    });
 });
