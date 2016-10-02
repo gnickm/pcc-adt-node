@@ -8,20 +8,20 @@
 /**
  * Module dependencies.
  */
-var ADTSoapServer = require('../');
+var adt = require('../');
 var util = require('util');
 
 /**
  * Create an instance of the server
  */
-var adt = new ADTSoapServer();
+var app = adt();
 
 /**
  * Register handlers for A01, A02, and A03. They will print some information
  * about the patient. See functions below for more information on the parsing
  * of messages for this info.
  */
-adt.handler('A01', function(message, done) {
+app.handler('A01', function(message, done) {
     console.log('info', util.format(
         '*** Admitted patient %s (%s) into room %s',
         getPatientPCCID(message),
@@ -31,7 +31,7 @@ adt.handler('A01', function(message, done) {
     done();
 });
 
-adt.handler('A02', function(message, done) {
+app.handler('A02', function(message, done) {
     console.log('info', util.format(
         '*** Transferred patient %s (%s) to room %s',
         getPatientPCCID(message),
@@ -41,7 +41,7 @@ adt.handler('A02', function(message, done) {
    done();
 });
 
-adt.handler('A03', function(message, done) {
+app.handler('A03', function(message, done) {
     console.log('info', util.format(
         '*** Discharged patient %s (%s) from room %s',
         getPatientPCCID(message),
@@ -54,7 +54,7 @@ adt.handler('A03', function(message, done) {
 /**
  * Create an instance of the server
  */
-adt.listen({
+app.listen({
    wsdl: './example.wsdl',
    log:  console.log
 });
@@ -64,10 +64,10 @@ adt.listen({
  */
 function getRoomNumber(message) {
     // Find the PV1 (Patient Visit) segment in the message
-    var pv1 = adt.hl7.getSegmentOfType('PV1', message);
+    var pv1 = app.hl7.getSegmentOfType('PV1', message);
 
     // Use the HL7 util to split up the AssignedPatientLocation field
-    var roomChunks = adt.hl7.splitDataField(pv1.parsed.AssignedPatientLocation);
+    var roomChunks = app.hl7.splitDataField(pv1.parsed.AssignedPatientLocation);
 
     /**
      * Room subfields:
@@ -81,10 +81,10 @@ function getRoomNumber(message) {
 
 function getPatientName(message) {
     // Find the PID (Patient Identification) segment in the message
-    var pid = adt.hl7.getSegmentOfType('PID', message);
+    var pid = app.hl7.getSegmentOfType('PID', message);
 
     // Use the HL7 util to split up the PatientName field
-    var nameChunks = adt.hl7.splitDataField(pid.parsed.PatientName);
+    var nameChunks = app.hl7.splitDataField(pid.parsed.PatientName);
 
     // Subfield 0 is last name, subfield 1 is first name
     return nameChunks[1] + ' ' + nameChunks[0];
@@ -92,10 +92,10 @@ function getPatientName(message) {
 
 function getPatientPCCID(message) {
     // Find the PID (Patient Identification) segment in the message
-    var pid = adt.hl7.getSegmentOfType('PID', message);
+    var pid = app.hl7.getSegmentOfType('PID', message);
 
     // Use the HL7 util to split up the PatientIdentifierList field
-    var idChunks = adt.hl7.splitDataField(pid.parsed.PatientIdentifierList);
+    var idChunks = app.hl7.splitDataField(pid.parsed.PatientIdentifierList);
 
     /**
      * PatientIdentifierList may have many repetitions of the same field

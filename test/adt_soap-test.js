@@ -8,16 +8,16 @@ var soap   = require('soap');
 
 //--------------------------------------------------------------------------
 
-var base64        = require('../lib/base64');
-var hl7           = require('../lib/hl7');
-var ADTSoapServer = require('../lib/adt_soap');
+var base64 = require('../lib/base64');
+var hl7    = require('../lib/hl7');
+var adt    = require('../lib/adt_soap');
 
 //--------------------------------------------------------------------------
 
 // Self-signed certs OK for testing
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-var soapServer = null;
+var app = null;
 
 describe('ADT SOAP Functions', function() {
     describe('listen() with SSL', function() {
@@ -37,12 +37,12 @@ describe('ADT SOAP Functions', function() {
                 sslcert: 'test/fixtures/self-signed.crt',
                 sslkey:  'test/fixtures/self-signed.key'
             };
-            soapServer = new ADTSoapServer();
-            soapServer.listen(soapOptions);
+            app = adt();
+            app.listen(soapOptions);
         });
 
         after(function(done) {
-            soapServer.close(done);
+            app.close(done);
         });
 
         it('should be callable via SOAP client in happy path', function(done) {
@@ -262,12 +262,12 @@ describe('ADT SOAP Functions', function() {
                 // log: console.log,
                 wsdl:    'test/fixtures/local-adt-http.wsdl'
             };
-            soapServer = new ADTSoapServer();
-            soapServer.listen(soapOptions);
+            app = adt();
+            app.listen(soapOptions);
         });
 
         after(function(done) {
-            soapServer.close(done);
+            app.close(done);
         });
 
         it('should be callable via SOAP client in happy path', function(done) {
@@ -320,12 +320,12 @@ describe('ADT SOAP Functions', function() {
                 sslcert: 'test/fixtures/self-signed.crt',
                 sslkey:  'test/fixtures/self-signed.key'
             };
-            soapServer = new ADTSoapServer();
-            soapServer.listen(soapOptions);
+            app = adt();
+            app.listen(soapOptions);
         });
 
         after(function(done) {
-            soapServer.close(done);
+            app.close(done);
         });
 
         it('should pass through to correct registered handler', function(done) {
@@ -335,7 +335,7 @@ describe('ADT SOAP Functions', function() {
                 password: 'default-password',
                 data: base64.encode(hl7String)
             };
-            soapServer.handler('A03', function(message, next) {
+            app.handler('A03', function(message, next) {
                 expect(message).to.not.be.null;
                 var evn = hl7.getSegmentOfType('EVN', message);
                 expect(evn.parsed.TypeCode).to.equal('A03');

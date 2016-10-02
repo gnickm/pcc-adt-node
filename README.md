@@ -4,25 +4,28 @@
 
 ```js
 var adt = require('pcc-adt');
+var app = adt();
 
-adt.handler('A01', function(message, done) {
+app.handler('A01', function(message, done) {
    console.log('Received a patient admission');
    done();
 });
 
-adt.handler('A02', function(message, done) {
+app.handler('A02', function(message, done) {
    console.log('Received a patient transfer');
    done();
 });
 
-adt.handler('A03', function(message, done) {
+app.handler('A03', function(message, done) {
    console.log('Received a patient discharge');
    done();
 });
 
-adt.listen({
+app.listen({
    wsdl: '/path/to/adt-service.wsdl',
-   path: '/desired/path/to/service'
+   path: '/desired/path/to/service',
+   username: 'service-username',
+   password: 'service-password'
 });
 ```
 
