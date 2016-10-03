@@ -1,4 +1,4 @@
-# pcc-adt [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url]
+# pcc-adt [![NPM version][npm-image]][npm-url] [![Build Status][travis-image]][travis-url] [![Coveralls Status][coveralls-image]][coveralls-url]
 
 > Customizable baseline [PointClickCare](https://www.pointclickcare.com/) ADT SOAP service for [node](http://nodejs.org).
 
@@ -221,7 +221,10 @@ $ npm test
 
 ## License
 
-  [MIT](LICENSE)
+[MIT](LICENSE)
+
+[npm-url]: https://npmjs.org/package/pcc-adt
+[npm-image]: http://img.shields.io/npm/v/pcc-adt.svg
 
 [travis-url]: https://travis-ci.org/gnickm/pcc-adt-node
 [travis-image]: http://img.shields.io/travis/gnickm/pcc-adt-node.svg
