@@ -63,6 +63,10 @@ the signature `function(level, message)`. You can directly pass `console.log`,
 but be careful with scoping issues when passing other logging objects -- for
 example, passing `winston.log` will cause failures if not wrapped in an
 anonymous function. **Default:** undefined (no logging)
+- `username` (optional) - username for call to SOAP service. **Default:**
+default-user
+- `password` (optional) - password for call to SOAP service. **Default:**
+default-password
 
 ---
 ### app.handler(eventType, handleFunc)
@@ -75,6 +79,11 @@ The handler will be passed the [nodengine-hl7][nodengine-hl7-url] parsed ADT
 message as the `message` parameter. Following the typical callback pattern, the
 handler must call the `done` function, either with no parameters to indicate
 success or an `Error` object to notify the SOAP client of an application error.
+
+---
+### app.close(done)
+
+Cleanly closes the listening app. Calls `done` when close is complete.
 
 ---
 ### app.hl7.parseString(messageString, done(err, parsedMessage))
@@ -99,6 +108,13 @@ function will only return true if there is exactly one segment of `segmentType`.
 Returns the first segment of type `segmentType` found in
 [nodengine-hl7][nodengine-hl7-url] parsed message `parsedMessage` or null if the
 segment is not found.
+
+---
+### app.hl7.getAllSegmentsOfType(segmentType, parsedMessage)
+
+Returns all segments of type `segmentType` found in
+[nodengine-hl7][nodengine-hl7-url] parsed message `parsedMessage` as an array or
+an empty array if the segment is not found.
 
 ---
 ### app.hl7.splitDataField(dataFieldString, componentSep = '^', repetitionSep = '~')
@@ -130,14 +146,13 @@ The fields provided for each segment type are defined
 ```javascript
 // Find the Resident's name, assuming message is nodengine-hl7 parsed
 
+// Loop over all segments in message
 for(var i = 0; i < message.segments.length; i++) {
 
    // Find the PID segment
-
    if(message.segments[i].parsed.SegmentType == 'PID') {
 
       // Return the name
-
       return parsedMessage.segments[i].parsed.ResidentName;
    }
 }
