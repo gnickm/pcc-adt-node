@@ -33,7 +33,7 @@ describe('ADT Manager Functions', function() {
             expect(adtman.isRegistered({foo: 'bar'})).to.be.false;
             done();
         });
-        it('should return true if a message type is registered', function(done) {
+        it('should return true if a event type is registered', function(done) {
             adtman.register('A02', function(){});
             expect(adtman.isRegistered('A02')).to.be.true;
             done();
@@ -46,7 +46,7 @@ describe('ADT Manager Functions', function() {
             expect(adtman.isRegistered('A03')).to.be.true;
             done();
         });
-        it('should fail to register unsupported message type', function(done) {
+        it('should fail to register unsupported event type', function(done) {
             expect(adtman.register('FOO', function(){})).to.be.false;
             expect(adtman.isRegistered('FOO')).to.be.false;
             done();
@@ -145,7 +145,7 @@ describe('ADT Manager Functions', function() {
                 });
             });
         });
-        it('should fail if the message type is unexpected', function(done) {
+        it('should fail if the event type is unexpected', function(done) {
             var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^FOO|110A35A09B785|P|2.5\r" +
                 "EVN|FOO|200702080406|||PointClickCare|200702080406\r" +
@@ -162,7 +162,7 @@ describe('ADT Manager Functions', function() {
                 });
             });
         });
-        it('should fail if missing EVN segment (required for every message type)', function(done) {
+        it('should fail if missing EVN segment (required for every event type)', function(done) {
             var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 // "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
@@ -179,7 +179,7 @@ describe('ADT Manager Functions', function() {
                 });
             });
         });
-        it('should fail if missing PID segment (required for every message type)', function(done) {
+        it('should fail if missing PID segment (required for every event type)', function(done) {
             var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
@@ -196,7 +196,7 @@ describe('ADT Manager Functions', function() {
                 });
             });
         });
-        it('should fail if missing PV1 segment (required for every message type)', function(done) {
+        it('should fail if missing PV1 segment (required for every event type)', function(done) {
             var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
@@ -213,7 +213,7 @@ describe('ADT Manager Functions', function() {
                 });
             });
         });
-        it('should fail if missing ZEV segment (required for every message type)', function(done) {
+        it('should fail if missing ZEV segment (required for every event type)', function(done) {
             var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
@@ -230,7 +230,7 @@ describe('ADT Manager Functions', function() {
             });
         });
     });
-    describe('getADTMessageType()', function() {
+    describe('getADTEventType()', function() {
         it('should return type code from EVN segment', function(done) {
             var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
@@ -242,7 +242,7 @@ describe('ADT Manager Functions', function() {
             hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
-                expect(adtman.getADTMessageType(parsedMessage)).to.equal('A03');
+                expect(adtman.getADTEventType(parsedMessage)).to.equal('A03');
                 done();
             });
         });
@@ -256,7 +256,7 @@ describe('ADT Manager Functions', function() {
             hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
                 expect(parsedMessage).to.not.equal(null);
-                expect(adtman.getADTMessageType(parsedMessage)).to.be.false;
+                expect(adtman.getADTEventType(parsedMessage)).to.be.false;
                 done();
             });
         });

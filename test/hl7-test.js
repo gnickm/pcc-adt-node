@@ -130,7 +130,7 @@ describe('HL7 Util Functions', function() {
             });
         });
 
-        it('should return first segment if there are multiple and only one requested', function(done) {
+        it('should return first segment if there are multiple', function(done) {
             var hl7String =
                 "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
                 "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
@@ -151,27 +151,23 @@ describe('HL7 Util Functions', function() {
                 done();
             });
         });
+    });
 
-        it('should return all found segments, or empty array if not found when requesting multiple segments', function(done) {
-            var hl7String =
-                "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
-                "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
-                "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
-                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
-                "PV1|2|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
-                "PV1|3|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
-                "ZEV|2001|200702080406|PointClickCare";
+    describe('getAllSegmentsOfType()', function() {
+        var hl7String =
+            "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
+            "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
+            "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
+            "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+            "PV1|2|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+            "PV1|3|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
+            "ZEV|2001|200702080406|PointClickCare";
 
+        it('should return multiple found segments in an array', function(done) {
             hl7.parseString(hl7String, function(err, parsedMessage) {
                 expect(err).to.be.null;
 
-                var segments = hl7.getSegmentOfType('MSH', parsedMessage, true);
-                expect(segments).to.not.equal(null);
-                expect(segments).to.be.instanceof(Array);
-                expect(segments).to.have.lengthOf(1);
-                expect(segments[0].parsed.SegmentType).to.equal('MSH');
-
-                segments = hl7.getSegmentOfType('PV1', parsedMessage, true);
+                var segments = hl7.getAllSegmentsOfType('PV1', parsedMessage, true);
                 expect(segments).to.not.equal(null);
                 expect(segments).to.be.instanceof(Array);
                 expect(segments).to.have.lengthOf(3);
@@ -182,7 +178,29 @@ describe('HL7 Util Functions', function() {
                 expect(segments[2].parsed.SegmentType).to.equal('PV1');
                 expect(segments[2].parsed.SetID).to.equal('3');
 
-                segments = hl7.getSegmentOfType('FOO', parsedMessage, true);
+                done();
+            });
+        });
+
+        it('should still return an array even if it finds just one segment', function(done) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
+                expect(err).to.be.null;
+
+                var segments = hl7.getAllSegmentsOfType('MSH', parsedMessage, true);
+                expect(segments).to.not.equal(null);
+                expect(segments).to.be.instanceof(Array);
+                expect(segments).to.have.lengthOf(1);
+                expect(segments[0].parsed.SegmentType).to.equal('MSH');
+
+                done();
+            });
+        });
+
+        it('should return an empty array if no segments found', function(done) {
+            hl7.parseString(hl7String, function(err, parsedMessage) {
+                expect(err).to.be.null;
+
+                var segments = hl7.getAllSegmentsOfType('FOO', parsedMessage, true);
                 expect(segments).to.not.equal(null);
                 expect(segments).to.be.instanceof(Array);
                 expect(segments).to.have.lengthOf(0);
@@ -192,80 +210,6 @@ describe('HL7 Util Functions', function() {
         });
     });
 
-    describe('makeAckMessage()', function() {
-        it('should return a valid AA message', function(done) {
-            var hl7String =
-                "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
-                "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
-                "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
-                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
-                "ZEV|2001|200702080406|PointClickCare";
-
-            hl7.parseString(hl7String, function(err, parsedMessage) {
-                expect(err).to.be.null;
-
-                var msh = hl7.getSegmentOfType('MSH', parsedMessage);
-                var msaString = hl7.makeAckMessage(msh, 'AA');
-                hl7.parseString(msaString, function(err, parsedMsa) {
-                    expect(err).to.be.null;
-                    var newmsh = hl7.getSegmentOfType('MSH', parsedMsa);
-                    expect(newmsh.parsed.ReceivingApplication).to.equal(msh.parsed.SendingApplication);
-                    expect(newmsh.parsed.ReceivingFacility).to.equal(msh.parsed.SendingFacility);
-                    expect(newmsh.parsed.SendingApplication).to.equal(msh.parsed.ReceivingApplication);
-                    expect(newmsh.parsed.SendingFacility).to.equal(msh.parsed.ReceivingFacility);
-                    expect(newmsh.parsed.DateTime).to.not.equal(msh.parsed.DateTime);
-                    expect(newmsh.parsed.MessageControlID).to.equal(msh.parsed.MessageControlID);
-                    expect(newmsh.parsed.ProcessingID).to.equal(msh.parsed.ProcessingID);
-
-                    var msa = hl7.getSegmentOfType('MSA', parsedMsa);
-                    expect(msa.parsed.ControlID).to.equal(msh.parsed.MessageControlID);
-                    expect(msa.parsed.AcknowledgementCode).to.equal('AA');
-
-                    expect(hl7.getSegmentOfType('ERR', parsedMsa)).to.be.null;
-
-                    done();
-                });
-            });
-        });
-
-        it('should return a valid AE message', function(done) {
-            var hl7String =
-                "MSH|^~\\&|SNDAPPL|snd_fac|RECAPPL|rec_fac|20070208165451.447- 0500||ADT^A03|110A35A09B785|P|2.5\r" +
-                "EVN|A03|200702080406|||PointClickCare|200702080406\r" +
-                "PID|1||99269^^^^FI~123321^^^^PI||Berk^Ailsa||19400503|F|||579 5 PointClickCare Street^^Lakeview^OH^90210||^PRN^PH^^^^^^^^^(937) 8432794|||||04254|275-32-9550\r" +
-                "PV1|1|N|100^104^A^ABC2PREV0021^^N^100^1||||G45670 ^Haenel^Mary- Ann|||||||||||0||||||||||||||||||||||||||20070207 0403-0500|200702080406-0500\r" +
-                "ZEV|2001|200702080406|PointClickCare";
-
-            hl7.parseString(hl7String, function(err, parsedMessage) {
-                expect(err).to.be.null;
-
-                var msh = hl7.getSegmentOfType('MSH', parsedMessage);
-                var msaString = hl7.makeAckMessage(msh, 'AE', 'Test error messsage');
-                hl7.parseString(msaString, function(err, parsedMsa) {
-                    expect(err).to.be.null;
-                    var newmsh = hl7.getSegmentOfType('MSH', parsedMsa);
-                    expect(newmsh.parsed.ReceivingApplication).to.equal(msh.parsed.SendingApplication);
-                    expect(newmsh.parsed.ReceivingFacility).to.equal(msh.parsed.SendingFacility);
-                    expect(newmsh.parsed.SendingApplication).to.equal(msh.parsed.ReceivingApplication);
-                    expect(newmsh.parsed.SendingFacility).to.equal(msh.parsed.ReceivingFacility);
-                    expect(newmsh.parsed.DateTime).to.not.equal(msh.parsed.DateTime);
-                    expect(newmsh.parsed.MessageControlID).to.equal(msh.parsed.MessageControlID);
-                    expect(newmsh.parsed.ProcessingID).to.equal(msh.parsed.ProcessingID);
-
-                    var msa = hl7.getSegmentOfType('MSA', parsedMsa);
-                    expect(msa.parsed.ControlID).to.equal(msh.parsed.MessageControlID);
-                    expect(msa.parsed.AcknowledgementCode).to.equal('AE');
-
-                    var errSegment = hl7.getSegmentOfType('ERR', parsedMsa);
-                    expect(errSegment).to.not.be.null;
-                    expect(errSegment.parsed.ErrorCode).to.equal('AE');
-                    expect(errSegment.parsed.UserMessage).to.equal('Test error messsage');
-
-                    done();
-                });
-            });
-        });
-    });
     describe('splitDataField()', function() {
         it('should just return the field if it is not splittable', function(done) {
             expect(hl7.splitDataField('This should not split up')).to.equal('This should not split up');
@@ -281,7 +225,6 @@ describe('HL7 Util Functions', function() {
             done();
         });
         it('should split on repetition then component separator', function(done) {
-            done();
             var chunks = hl7.splitDataField('Lewis^Jerry^Lee~Redding^Ottis');
             expect(chunks).to.be.an.array;
             expect(chunks).to.have.length(2);
@@ -292,6 +235,20 @@ describe('HL7 Util Functions', function() {
             expect(chunks[1]).to.have.length(2);
             expect(chunks[1][0]).to.equal('Redding');
             expect(chunks[1][1]).to.equal('Ottis');
+            done();
+        });
+        it('should split on custom separators', function(done) {
+            var chunks = hl7.splitDataField('Lewis#Jerry#Lee%Redding#Ottis', '#', '%');
+            expect(chunks).to.be.an.array;
+            expect(chunks).to.have.length(2);
+            expect(chunks[0]).to.have.length(3);
+            expect(chunks[0][0]).to.equal('Lewis');
+            expect(chunks[0][1]).to.equal('Jerry');
+            expect(chunks[0][2]).to.equal('Lee');
+            expect(chunks[1]).to.have.length(2);
+            expect(chunks[1][0]).to.equal('Redding');
+            expect(chunks[1][1]).to.equal('Ottis');
+            done();
         });
     });
 });
